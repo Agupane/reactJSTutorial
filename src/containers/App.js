@@ -1,12 +1,13 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import Persons from '../components/Persons/Persons';
 import Cockpit from '../components/Cockpit/Cockpit';
-import classes from './App.css';
-class App extends Component {
+import withClass from '../hoc/WithClass';
+import classes from './App.module.css';
+class App extends PureComponent {
 
     constructor(props){
         super(props);
-        console.log("[App.js] Inside Constructor", props)
+        console.log("[App.js] Inside Constructor", props);
     }
 
     componentWillMount(){
@@ -17,12 +18,23 @@ class App extends Component {
         console.log('[App.js] Inside componentDidMount');
     }
 
+    componentWillUpdate(nextProps, nextState, nextContext) {
+        console.log("[UPDATE App.js] Inside componentWillUpdate", nextProps, nextState);
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        console.log("[Update App.js] Inside componentDidUpdate");
+    }
+
+
     state = {
         persons: [
             { id: 'asd1', name: 'Max', age: 28 },
             { id: 'asd2', name: 'Manu', age: 29 },
             { id: 'asd3', name: 'Stephanie', age: 26}
-        ]
+        ],
+        showPersons: false,
+        toggleClickCounter: 0
     };
 
     switchNameHandler = (newName) => {
@@ -57,11 +69,13 @@ class App extends Component {
     };
 
     togglePersonsHandler = () => {
-        console.log("Toggled persons");
         console.log("Show persons: ", this.state.showPersons);
         const doesShow = this.state.showPersons;
-        this.setState({
-            showPersons: !doesShow
+        this.setState((prevState,props) =>{
+            return {
+                showPersons: !doesShow,
+                toggleClickCounter: prevState.toggleClickCounter + 1
+            }
         });
     };
 
@@ -94,15 +108,19 @@ class App extends Component {
       }
 
       return(
-          <div>
+          <>
+              <button onClick={() => {this.setState({showPersons:true})}}>Show Persons</button>
               <Cockpit
                   showPersons={this.state.showPersons}
                   persons={this.state.persons}
                   clicked={this.togglePersonsHandler} />
               { persons }
-          </div>
+          </>
+      //    <div className={classes.app}>
+
+      //    </div>
       );
   }
 }
 
-export default App;
+export default withClass(App, classes.app);
