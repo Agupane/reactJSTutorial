@@ -3,6 +3,9 @@ import Persons from '../components/Persons/Persons';
 import Cockpit from '../components/Cockpit/Cockpit';
 import withClass from '../hoc/WithClass';
 import classes from './App.module.css';
+
+export const AuthContext = React.createContext(false);
+
 class App extends PureComponent {
 
     constructor(props){
@@ -34,7 +37,8 @@ class App extends PureComponent {
             { id: 'asd3', name: 'Stephanie', age: 26}
         ],
         showPersons: false,
-        toggleClickCounter: 0
+        toggleClickCounter: 0,
+        authenticated: false
     };
 
     switchNameHandler = (newName) => {
@@ -66,6 +70,12 @@ class App extends PureComponent {
         persons[personIndex] = person;
 
         this.setState({persons: persons});
+    };
+
+    loginHandler = () =>{
+        this.setState({
+            authenticated: true
+        });
     };
 
     togglePersonsHandler = () => {
@@ -100,9 +110,10 @@ class App extends PureComponent {
           persons = (
               <div>
                   <Persons
-                      persons={this.state.persons}
-                      clicked={this.deletePersonHandler}
-                      changed={this.nameChangedHandler} />
+                    persons={this.state.persons}
+                    clicked={this.deletePersonHandler}
+                    changed={this.nameChangedHandler}
+                  />
               </div>
           );
       }
@@ -111,10 +122,11 @@ class App extends PureComponent {
           <>
               <button onClick={() => {this.setState({showPersons:true})}}>Show Persons</button>
               <Cockpit
-                  showPersons={this.state.showPersons}
-                  persons={this.state.persons}
-                  clicked={this.togglePersonsHandler} />
-              { persons }
+                showPersons={this.state.showPersons}
+                persons={this.state.persons}
+                clicked={this.togglePersonsHandler}
+                login={this.loginHandler}/>
+              <AuthContext.Provider value={this.state.authenticated}>{persons}</AuthContext.Provider>
           </>
       //    <div className={classes.app}>
 
